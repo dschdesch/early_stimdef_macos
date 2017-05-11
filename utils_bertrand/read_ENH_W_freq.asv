@@ -1,0 +1,100 @@
+clear
+%last number is the index in the index of the stimulus in the experiment
+D = read(dataset,'F16517',16);
+D = read(dataset,'L16552',121)
+oldstim=0
+
+
+bin_psth=1
+stimparapm = D.stimparam;
+dd=00
+start_test=stimparapm.condBurstDur;
+end_test = stimparapm.condBurstDur+stimparapm.testBurstDur;
+
+delta=stimparapm.delta_T
+start_test = start_test+delta;
+end_test = end_test+delta;
+
+durT = end_test-start_test;
+
+
+iCond=stimparapm.Presentation.iCond;
+iRep = stimparapm.Presentation.iRep;
+
+Xname = stimparapm.Presentation.X.FieldName;
+Xval = stimparapm.Presentation.X.PlotVal;
+nX=length(unique(Xval));
+
+Yname = stimparapm.Presentation.Y.FieldName;
+Yval = stimparapm.Presentation.Y.PlotVal;
+nY=length(unique(Yval));
+
+Nconds = prod(stimparapm.Ncond_XY);
+spks = D.spiketimes;
+Nreps = stimparapm.Nrep
+% Nreps = 5
+count_mat = zeros(nY,nX);
+
+bins = 0:bin_psth:2000;
+lPSTH = length(bins);
+
+count=zeros(1,Nconds);
+varcount=zeros(1,Nconds);
+PSTHs = zeros(Nconds,lPSTH);
+for icond=1:Nconds
+    vartmp=[];
+    for irep=1:Nreps
+        train = spks{icond,irep};
+%         PSTHs(icond,:)=PSTHs(icond,:)+hist(train,bins);
+        if Xval(icond)>0
+        ispk = intersect(find(train>=start_test),find(train<=end_test-dd));
+        else
+            if oldstim~=1
+            ispk = intersect(find(train>=start_test),find(train<=end_test-dd));
+            else
+            ispk = find(train<=durT-dd);
+            end
+        end
+        train = train(ispk);
+        PSTHs(icond,:)=PSTHs(icond,:)+hist(train,bins);
+        count(icond) = count(icond)+length(train);
+        vartmp(irep)=length(train);
+    end
+    count(icond) = count(icond)/Nreps;
+    varcount(icond)=std(vartmp);
+end
+
+icond=1
+for iY=1:nY
+    for iX=1:nX
+        count_mat(iY,iX)=count(icond);
+        icond=icond+1;
+    end
+end
+
+Xval(find(Xval==-1))=0;
+Xval(find(abs(Xval)==100))=0;
+xparam = Xval(2:2:end)
+
+figure()
+hold on
+subplot(211)
+% plot(PSTHs')
+% plot(xparam,count_mat(2:2:end)-count_mat(1:2:end),'b')
+plot(xparam,(count_mat(2:2:end)-count_mat(1:2:end))./sqrt(0.5*(varcount(2:2:end).^2+varcount(1:2:end).^2)),'b')
+
+subplot(212)
+% plot(Xval,count_mat)
+plot(xparam,count_mat(2:2:end),'r','LineWidth',2)
+hold on
+plot(xparam,count_mat(2:2:end)+varcount(2:2:end),':r')
+plot(xparam,count_mat(2:2:end)-varcount(2:2:end),':r')
+
+
+plot(xparam,count_mat(1:2:end),'b','LineWidth',2)
+plot(xparam,count_mat(1:2:end)+varcount(1:2:end),':b')
+plot(xparam,count_mat(1:2:end)-varcount(1:2:end),':b')
+count_mat
+
+% imagesc(count_mat)
+
