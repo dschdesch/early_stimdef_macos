@@ -5,7 +5,7 @@ function S = CAPrec(dev, EXP, ToneFreq, Nrep, BurstDur, TotalDur, MinSPL, MaxSPL
 %   Helper function of CAPcurve.
 %   CAP (THR_CAP.rcx) Circuit must be loaded at call time.
  
-CI = sys3circuitinfo(dev);
+CI = sys3CircuitInfo(dev);
 Fsam = CI.Fsam;
 
 NSPL = length(SPL);
@@ -135,7 +135,7 @@ sys3setpar(0, 'Run', dev); % stop playing
 % return arg
 AmpHist = SPL(iAmpHist);
 ExpName = name(EXP);
-S = collectInStruct(ExpName, ToneFreq, MinSPL, MaxSPL, StartSPL, StepSPL, SPL, DAchan, ZScore, '-', iAmpHist, AmpHist, Thr);
+S = CollectInStruct(ExpName, ToneFreq, MinSPL, MaxSPL, StartSPL, StepSPL, SPL, DAchan, ZScore, '-', iAmpHist, AmpHist, Thr);
 
 
 function [S,N] = local_get_signal_to_noise(Rec,Nrep,BurstDur,TotalDur,Fsam)

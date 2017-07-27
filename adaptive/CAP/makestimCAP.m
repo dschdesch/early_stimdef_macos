@@ -18,7 +18,7 @@ if isempty(P.Freq), return; end
 % end
 
 % SPL
-P.SPL=evalSPLstepper(figh, '', P); 
+P.SPL=EvalSPLstepper(figh, '', P); 
 if isempty(P.SPL), return; end
 
 % % Check validity of BeginSPL
@@ -63,7 +63,7 @@ for ifreq=1:NFreq;
     
     if strcmpi(P.DAC(1),'L') || strcmpi(P.DAC(1),'B')
         DLL = calibrate(EXP, Fsam, 'L', Fcar);
-        Amp = dB2a(SPL)*sqrt(2)*dB2A(DLL);
+        Amp = dB2A(SPL)*sqrt(2)*dB2A(DLL);
         % Get attenuation settings
         [dum, Atten] = local_maxSPL(SPL,Amp,EXP);
         P.Attenuations(ifreq,1) = Atten.AnaAtten;
@@ -72,7 +72,7 @@ for ifreq=1:NFreq;
     
     if strcmpi(P.DAC(1),'R') || strcmpi(P.DAC(1),'B')
         DLR = calibrate(EXP, Fsam, 'R', Fcar);
-        Amp = dB2a(SPL)*sqrt(2)*dB2A(DLR);
+        Amp = dB2A(SPL)*sqrt(2)*dB2A(DLR);
         % Get attenuation settings
         [dum, Atten] = local_maxSPL(SPL,Amp,EXP);
         P.Attenuations(ifreq,end) = Atten.AnaAtten;
@@ -86,10 +86,9 @@ P.SPLs = P.SPL;
 SPL=P.StartSPL;%evalSPLstepper(figh, '', P); DUMMY TO AVOID EXCESSIVE TIME USE
 if isempty(SPL), return; end
 [P.SPL, P.Fcar, P.Ncond_XY] = MixSweeps(SPL, P.Freq);
-P = toneStim(P);
-
 P.Nrep = 1;
 P.RSeed = 0;
+
 % P.Slowest = 'Fcar';
 % P.Nextslow = 'SPL';
 % P.Fastest = 'Rep';
@@ -102,14 +101,17 @@ P.Baseline = 0;
 P.ITD = 0;
 P.ITDtype = 'ongoing';
 P.StimType = 'CAP';
+
+
+P = toneStim(P);
+P = sortConditions(P, 'Fcar', 'Carrier Intensity', ...
+     'Hz', P.StepFreqUnit);
 % P.Presentation.X.PlotVal = P.Fcar;
 % P.Presentation.X.ParUnit = P.StepFreqUnit;
 % P.Presentation.Nrep = 1;
 % P.Presentation.Ncond = size(P.Fcar,1);
 % P.Presentation.PresDur = P.BurstDur;
 % 
-P = sortConditions(P, 'Fcar', 'Carrier Intensity', ...
-     'Hz', P.StepFreqUnit);
 % 'TESTING MAKEDTIMFS'
 % P.Duration
 % P.Duration = []; % 
@@ -124,7 +126,7 @@ mxSPL = nan+zeros(size(SPLs)); % correct size, all nans
 for ii=1:numel(SPLs),
     % Find out how much waveforms can be boosted w/o exceeding the
     % max magnitude DACmax tolerated by the DAC
-    mxSPL(ii) = SPLs(ii) + a2db(DACmax/Amp(ii)) - 0.1;
+    mxSPL(ii) = SPLs(ii) + A2dB(DACmax/Amp(ii)) - 0.1;
 end
 
 AnaAtten = 0;
@@ -160,8 +162,8 @@ RoundingCorrection = AnaAtten-0.1*floor(10*AnaAtten);
 AnaAtten = AnaAtten-RoundingCorrection;
 Gain = Gain - SameSize(RoundingCorrection, Gain);
 
-Gain = samesize(Gain,SPLs);
-NumScale = db2a(Gain);
+Gain = SameSize(Gain,SPLs);
+NumScale = dB2A(Gain);
 NumGain_dB = Gain; % for the record
 Atten = CollectInStruct(AnaAtten, NumScale, NumGain_dB);
 
