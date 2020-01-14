@@ -1,10 +1,9 @@
 %%% Convert data from the Early format to matlab .mat files
 %%% This script only deals with spike times
 %%% It saves the spike times and the stimulus parameters to a .mat file
-
-clear all
-animal_ID = 'H16568'; %name of the directory where the data is
-pathtofile = 'C:\ExpData\Exp\'; %path to the folder where the data folders are located
+function [] = convert_data_early2mat (animal_ID)
+% animal_ID = 'H16568'; %name of the directory where the data is
+pathtofile = 'C:\ExpData\Mark\'; %path to the folder where the data folders are located
 
 list_dir = dir([pathtofile,animal_ID]); %list everything in the folder pathtofile/animal_ID
 pattern = 'EarlyDS';  % the script is going to care only about the files with that pattern in their name
@@ -40,4 +39,4 @@ for idir=1:length(list_dir) %for every file in the directory
         
     end
 end
-
+end

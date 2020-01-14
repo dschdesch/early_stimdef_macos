@@ -33,8 +33,8 @@ if mod(P.BeginSPL - P.StartSPL, P.StepSPL) ~= 0, return; end
 % NSPL = 1+round((P.EndSPL-P.StartSPL)/P.StepSPL);
 % SPL = linspace(P.StartSPL, P.EndSPL, NSPL);
 
-P.BurstDur = 20;
-P.ISI = 4*P.BurstDur; % So that we are able to define a Signal and Noise window
+% P.BurstDur = 20;
+% P.ISI = 4*P.BurstDur; % So that we are able to define a Signal and Noise window
 P.FreqTolMode = 'exact';
 [P.ModFreq, P.ModDepth, P.ModStartPhase, P.ModTheta, ...
     P.OnsetDelay, P.RiseDur, P.FallDur, P.WavePhase, ...

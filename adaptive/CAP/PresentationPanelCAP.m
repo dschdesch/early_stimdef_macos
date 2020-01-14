@@ -12,6 +12,7 @@ Order = ParamQuery('Order', 'Order:', '', {'Forward' 'Reverse'}, ...
     '', 'Order of frequency conditions.',1);
 ZScore = ParamQuery('ZScore', 'z:', '60', '', ...
     'rreal/positive', 'z-score criterion for the RMSs.',1);
+ISI = ParamQuery('ISI', 'ISI:','200','ms','rreal/nonnegative', 'Duration of stimulus',2);
 
 % add to panel
 Pres = GUIpanel('Pres', 'Presentation');
@@ -20,6 +21,7 @@ Pres = add(Pres, BeginSPL, 'aligned', [0 5]);
 Pres = add(Pres, MaxNPres, 'aligned', [0 5]);
 Pres = add(Pres, ZScore, 'aligned', [0 5]);
 Pres = add(Pres, Order, 'aligned', [0 5]);
+Pres = add(Pres, ISI, 'aligned', [0 5]);
 
 
 
